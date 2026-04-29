@@ -1,0 +1,156 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Organization {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  plan      String   @default("starter")
+  appTitle  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  users     User[]
+  profiles  Profile[]
+  teams     Team[]
+  groups    Group[]
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  roles     String[]
+  status       String    @default("active")
+  tokenVersion Int       @default(0)
+  lastSeenAt   DateTime?
+  orgId        String?
+  org       Organization? @relation(fields: [orgId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Profile {
+  id             String    @id @default(uuid())
+  name           String
+  role           String?
+  department     String?
+  assessmentDate DateTime?
+  base           String
+  phase          String
+  rawPdfName     String?
+  orgId          String?
+  org            Organization? @relation(fields: [orgId], references: [id], onDelete: SetNull)
+  coachId        String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Complex nested PCM data stored as JSON
+  floors                Json
+  phaseStress           Json
+  baseStress            Json
+  perceptionFilters     Json
+  interactionStyles     Json
+  personalityParts      Json
+  communicationChannels Json
+  preferredEnvironment  Json
+  psychologicalNeeds    Json
+
+  teamMembers    TeamMember[]
+  coachingNotes  CoachingNote[]
+  goals          Goal[]
+  savedOutputs   SavedOutput[]
+}
+
+model Group {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  orgId       String?
+  org         Organization? @relation(fields: [orgId], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  teams       Team[]
+}
+
+model Team {
+  id          String       @id @default(uuid())
+  name        String
+  description String?
+  groupId     String?
+  group       Group?       @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  orgId       String?
+  org         Organization? @relation(fields: [orgId], references: [id], onDelete: SetNull)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  members     TeamMember[]
+}
+
+model TeamMember {
+  profileId String
+  teamId    String
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  team      Team    @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@id([profileId, teamId])
+}
+
+model AIConfig {
+  id        String   @id @default("default")
+  config    Json
+  updatedAt DateTime @updatedAt
+}
+
+model CoachingNote {
+  id        String   @id @default(uuid())
+  profileId String
+  profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  authorId  String
+  content   String
+  isShared  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SavedOutput {
+  id        String   @id @default(uuid())
+  profileId String
+  profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  authorId  String
+  type      String
+  title     String
+  content   Json
+  createdAt DateTime @default(now())
+}
+
+model Goal {
+  id          String    @id @default(uuid())
+  profileId   String
+  profile     Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  authorId    String
+  title       String
+  description String?
+  status      String    @default("active")
+  dueDate     DateTime?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  orgId      String?
+  userId     String
+  userName   String
+  action     String
+  entity     String
+  entityId   String
+  entityName String?
+  createdAt  DateTime @default(now())
+}

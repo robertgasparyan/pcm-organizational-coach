@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npx shadcn@latest init --yes -d)",
+      "Bash(npx shadcn@latest init -y -d)",
+      "Bash(npx shadcn@latest add card badge button input label select tabs progress tooltip dialog sheet separator skeleton)",
+      "Bash(npm init *)",
+      "Bash(npm run *)",
+      "Bash(echo \"PID: $!\")",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(node -e \"const pkg=require\\('./node_modules/framer-motion/package.json'\\); console.log\\(pkg.version\\)\")",
+      "Bash(cd:*)",
+      "Bash(npx prisma:*)",
+      "Bash(cat:*)",
+      "Bash(psql:*)",
+      "Bash(DATABASE_URL=\"postgresql://postgres:123@localhost:5432/pcm_org_intelligence\" npx prisma db push 2>&1)",
+      "Bash(DATABASE_URL=\"postgresql://postgres:123@localhost:5432/pcm_org_intelligence\" npx prisma generate 2>&1)",
+      "Bash(DATABASE_URL=\"postgresql://postgres:123@localhost:5432/pcm_org_intelligence\" npx tsx /Users/robertgasparyan/Documents/Development/pcm-organizational-coach/server/src/seed.ts 2>&1)",
+      "Bash(DATABASE_URL=\"postgresql://postgres:123@localhost:5432/pcm_org_intelligence\" npx tsx -e \"\nimport { PrismaPg } from '@prisma/adapter-pg'\nimport { PrismaClient } from '@prisma/client'\nconst adapter = new PrismaPg\\({ connectionString: process.env.DATABASE_URL }\\)\nconst prisma = new PrismaClient\\({ adapter }\\)\nprisma.user.findMany\\(\\).then\\(u => console.log\\('users:', u\\)\\).catch\\(e => console.error\\('error:', e.message\\)\\).finally\\(\\(\\) => prisma.\\\\$disconnect\\(\\)\\)\n\" 2>&1)",
+      "Bash(DATABASE_URL=\"postgresql://postgres:123@localhost:5432/pcm_org_intelligence\" npx prisma db push --accept-data-loss 2>&1)",
+      "Bash(npx tsc:*)",
+      "Bash(mkdir -p /Users/robertgasparyan/Documents/Development/pcm-organizational-coach/docs)",
+      "Bash(mv /Users/robertgasparyan/Documents/Development/pcm-organizational-coach/Technology_Stack_Blueprint.md /Users/robertgasparyan/Documents/Development/pcm-organizational-coach/docs/Technology_Stack_Blueprint.md)",
+      "Bash(./node_modules/.bin/tsc --noEmit)",
+      "Bash(grep -v \":0$\")",
+      "Bash(npx vite *)"
+    ]
+  }
+}

@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Technology Stack Blueprint — PCM Organizational Coach</title>
+  <style>
+    /* ─── Reset & Tokens ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #ffffff;
+      --bg-alt:      #f8f9fb;
+      --bg-code:     #f3f4f6;
+      --border:      #e5e7eb;
+      --text:        #111827;
+      --text-muted:  #6b7280;
+      --text-code:   #1f2937;
+      --accent:      #6366f1;
+      --accent-soft: #eef2ff;
+      --sidebar-w:   272px;
+      --header-h:    56px;
+      /* PCM colors */
+      --thinker:    #4A90D9;
+      --persister:  #7B5EA7;
+      --harmonizer: #E8A44B;
+      --imaginer:   #A8C4A2;
+      --rebel:      #F5C842;
+      --promoter:   #D94A4A;
+    }
+    [data-theme="dark"] {
+      --bg:          #0f1117;
+      --bg-alt:      #1a1d27;
+      --bg-code:     #1e2130;
+      --border:      #2d3148;
+      --text:        #e2e8f0;
+      --text-muted:  #94a3b8;
+      --text-code:   #cbd5e1;
+      --accent:      #818cf8;
+      --accent-soft: #1e1b4b;
+    }
+
+    /* ─── Layout ─────────────────────────────────────────────────────── */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ─── Top Bar ─────────────────────────────────────────────────────── */
+    #topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: var(--header-h);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px;
+      gap: 12px;
+    }
+    #topbar .logo {
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 700; font-size: 15px; color: var(--text);
+      text-decoration: none;
+    }
+    #topbar .logo-icon {
+      width: 28px; height: 28px; background: var(--accent);
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 14px; font-weight: 800;
+    }
+    #topbar .meta {
+      font-size: 12px; color: var(--text-muted);
+    }
+    #topbar .controls { display: flex; align-items: center; gap: 8px; }
+    .btn-icon {
+      background: none; border: 1px solid var(--border);
+      border-radius: 7px; width: 34px; height: 34px;
+      cursor: pointer; color: var(--text-muted);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; transition: background 0.15s, color 0.15s;
+    }
+    .btn-icon:hover { background: var(--bg-alt); color: var(--text); }
+
+    /* ─── Body wrapper ───────────────────────────────────────────────── */
+    #layout {
+      display: flex;
+      margin-top: var(--header-h);
+      flex: 1;
+    }
+
+    /* ─── Sidebar ────────────────────────────────────────────────────── */
+    #sidebar {
+      position: fixed; top: var(--header-h); left: 0; bottom: 0;
+      width: var(--sidebar-w);
+      overflow-y: auto;
+      background: var(--bg-alt);
+      border-right: 1px solid var(--border);
+      padding: 20px 0 40px;
+      scrollbar-width: thin;
+    }
+    #sidebar::-webkit-scrollbar { width: 4px; }
+    #sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    .nav-group { margin-bottom: 4px; }
+    .nav-group-label {
+      font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--text-muted);
+      padding: 10px 20px 4px;
+    }
+    .nav-link {
+      display: block; padding: 5px 20px;
+      font-size: 13px; color: var(--text-muted);
+      text-decoration: none; border-left: 2px solid transparent;
+      transition: color 0.12s, border-color 0.12s, background 0.12s;
+      line-height: 1.4;
+    }
+    .nav-link:hover  { color: var(--text); background: var(--bg); }
+    .nav-link.active { color: var(--accent); border-left-color: var(--accent); background: var(--accent-soft); }
+
+    /* ─── Main Content ───────────────────────────────────────────────── */
+    #content {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      max-width: 900px;
+      padding: 48px 56px 80px;
+    }
+
+    /* ─── Typography ─────────────────────────────────────────────────── */
+    h1 { font-size: 2rem; font-weight: 800; line-height: 1.2; margin-bottom: 8px; }
+    h2 {
+      font-size: 1.35rem; font-weight: 700; margin: 48px 0 16px;
+      padding-bottom: 8px; border-bottom: 2px solid var(--border);
+      scroll-margin-top: calc(var(--header-h) + 20px);
+    }
+    h3 {
+      font-size: 1.05rem; font-weight: 700; margin: 28px 0 10px;
+      color: var(--text); scroll-margin-top: calc(var(--header-h) + 20px);
+    }
+    h4 { font-size: 0.9rem; font-weight: 700; margin: 18px 0 8px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); }
+    p  { margin: 0 0 14px; }
+    ul, ol { margin: 0 0 14px 20px; }
+    li { margin-bottom: 4px; }
+    a  { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    strong { font-weight: 700; }
+    code {
+      font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+      font-size: 0.82em;
+      background: var(--bg-code);
+      color: var(--text-code);
+      padding: 1px 6px; border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+    pre {
+      background: var(--bg-code);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 22px;
+      overflow-x: auto;
+      margin: 0 0 20px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    pre code {
+      background: none; border: none; padding: 0; font-size: inherit;
+      color: var(--text-code);
+    }
+    /* syntax color hints */
+    .kw { color: #818cf8; }
+    .st { color: #34d399; }
+    .cm { color: var(--text-muted); font-style: italic; }
+    .ty { color: #fb923c; }
+    .nu { color: #f472b6; }
+
+    /* ─── Tables ─────────────────────────────────────────────────────── */
+    .table-wrap { overflow-x: auto; margin: 0 0 24px; border-radius: 10px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    thead tr { background: var(--bg-alt); }
+    th {
+      text-align: left; font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--text-muted); padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    td { padding: 9px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: var(--bg-alt); }
+
+    /* ─── Badges ─────────────────────────────────────────────────────── */
+    .badge {
+      display: inline-block; font-size: 11px; font-weight: 600;
+      padding: 1px 8px; border-radius: 20px;
+      font-family: 'SF Mono', Consolas, monospace;
+    }
+    .badge-version { background: var(--accent-soft); color: var(--accent); }
+    .badge-layer   { background: #dcfce7; color: #166534; }
+    [data-theme="dark"] .badge-layer { background: #14532d; color: #86efac; }
+
+    /* ─── PCM Type Chips ─────────────────────────────────────────────── */
+    .pcm-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+    .pcm-chip {
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 14px; border-radius: 20px;
+      font-size: 13px; font-weight: 600; color: #fff;
+    }
+    .pcm-chip .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.6); }
+    .chip-thinker    { background: var(--thinker); }
+    .chip-persister  { background: var(--persister); }
+    .chip-harmonizer { background: var(--harmonizer); color: #1f2937; }
+    .chip-imaginer   { background: var(--imaginer);   color: #1f2937; }
+    .chip-rebel      { background: var(--rebel);      color: #1f2937; }
+    .chip-promoter   { background: var(--promoter); }
+
+    /* ─── Callout boxes ──────────────────────────────────────────────── */
+    .callout {
+      border-left: 3px solid var(--accent);
+      background: var(--accent-soft);
+      border-radius: 0 8px 8px 0;
+      padding: 12px 16px;
+      margin: 0 0 20px;
+      font-size: 13.5px;
+    }
+    .callout.warn { border-color: #f59e0b; background: #fffbeb; }
+    [data-theme="dark"] .callout.warn { background: #1c1400; }
+    .callout strong { display: block; margin-bottom: 4px; }
+
+    /* ─── Diagram / ASCII ────────────────────────────────────────────── */
+    .diagram {
+      background: var(--bg-code); border: 1px solid var(--border);
+      border-radius: 10px; padding: 20px 24px;
+      font-family: 'SF Mono', Consolas, monospace;
+      font-size: 12px; line-height: 1.7;
+      white-space: pre; overflow-x: auto;
+      color: var(--text-code);
+      margin: 0 0 24px;
+    }
+
+    /* ─── Section divider ────────────────────────────────────────────── */
+    .section-number {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; background: var(--accent); color: #fff;
+      border-radius: 7px; font-size: 12px; font-weight: 800;
+      margin-right: 10px; vertical-align: middle; flex-shrink: 0;
+    }
+    h2 .section-number { display: inline-flex; }
+
+    /* ─── Checklist ──────────────────────────────────────────────────── */
+    .checklist { list-style: none; margin-left: 0; }
+    .checklist li::before { content: "□ "; color: var(--accent); font-weight: 700; }
+
+    /* ─── Footer ─────────────────────────────────────────────────────── */
+    #footer {
+      margin-left: var(--sidebar-w);
+      padding: 24px 56px;
+      border-top: 1px solid var(--border);
+      font-size: 12px; color: var(--text-muted);
+      display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+    }
+
+    /* ─── Responsive ─────────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      #sidebar { display: none; }
+      #content, #footer { margin-left: 0; padding: 24px 20px 60px; }
+    }
+
+    /* ─── Scroll highlight ───────────────────────────────────────────── */
+    :target { scroll-margin-top: calc(var(--header-h) + 16px); }
+  </style>
+</head>
+<body>
+
+<!-- ══ TOP BAR ══════════════════════════════════════════════════════════ -->
+<header id="topbar">
+  <a class="logo" href="#">
+    <span class="logo-icon">P</span>
+    PCM Organizational Coach
+  </a>
+  <span class="meta">Technology Stack Blueprint · v1.0 · 2026-04-25</span>
+  <div class="controls">
+    <button class="btn-icon" id="themeToggle" title="Toggle dark mode">☀</button>
+  </div>
+</header>
+
+<div id="layout">
+
+<!-- ══ SIDEBAR ══════════════════════════════════════════════════════════ -->
+<nav id="sidebar">
+  <div class="nav-group">
+    <div class="nav-group-label">Overview</div>
+    <a class="nav-link" href="#s1">Project Overview</a>
+    <a class="nav-link" href="#s2">Technology Map</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label">Frontend</div>
+    <a class="nav-link" href="#s3">Frontend Stack</a>
+    <a class="nav-link" href="#s3-1">React + Vite</a>
+    <a class="nav-link" href="#s3-2">TypeScript</a>
+    <a class="nav-link" href="#s3-3">Tailwind CSS v4</a>
+    <a class="nav-link" href="#s3-4">shadcn/ui</a>
+    <a class="nav-link" href="#s3-5">Routing</a>
+    <a class="nav-link" href="#s3-6">Charts & Graphs</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label">Backend</div>
+    <a class="nav-link" href="#s4">Backend Stack</a>
+    <a class="nav-link" href="#s5">Database & ORM</a>
+    <a class="nav-link" href="#s6">AI Integration</a>
+    <a class="nav-link" href="#s7">Auth & Security</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label">Client</div>
+    <a class="nav-link" href="#s8">State Management</a>
+    <a class="nav-link" href="#s9">API Layer</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label">Reference</div>
+    <a class="nav-link" href="#s10">Coding Conventions</a>
+    <a class="nav-link" href="#s11">Implementation Patterns</a>
+    <a class="nav-link" href="#s12">Directory Structure</a>
+    <a class="nav-link" href="#s13">Build & Tooling</a>
+    <a class="nav-link" href="#s14">Environment Config</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label">Architecture</div>
+    <a class="nav-link" href="#s15">Diagrams</a>
+    <a class="nav-link" href="#s16">New Feature Blueprint</a>
+  </div>
+</nav>
+
+<!-- ══ MAIN CONTENT ══════════════════════════════════════════════════════ -->
+<main id="content">
+
+  <!-- Hero -->
+  <h1>Technology Stack Blueprint</h1>
+  <p style="color:var(--text-muted); margin-bottom:6px;">PCM Organizational Coach — Implementation-Ready Reference</p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:40px;">
+    <span class="badge badge-version">TypeScript 6</span>
+    <span class="badge badge-version">React 19</span>
+    <span class="badge badge-version">Express 5</span>
+    <span class="badge badge-version">Prisma 7</span>
+    <span class="badge badge-version">Tailwind CSS 4</span>
+    <span class="badge badge-version">Multi-AI</span>
+  </div>
+
+  <!-- PCM Type Chips -->
+  <div class="pcm-chips">
+    <span class="pcm-chip chip-thinker"><span class="dot"></span>Thinker #4A90D9</span>
+    <span class="pcm-chip chip-persister"><span class="dot"></span>Persister #7B5EA7</span>
+    <span class="pcm-chip chip-harmonizer"><span class="dot"></span>Harmonizer #E8A44B</span>
+    <span class="pcm-chip chip-imaginer"><span class="dot"></span>Imaginer #A8C4A2</span>
+    <span class="pcm-chip chip-rebel"><span class="dot"></span>Rebel #F5C842</span>
+    <span class="pcm-chip chip-promoter"><span class="dot"></span>Promoter #D94A4A</span>
+  </div>
+
+  <!-- ══ S1 PROJECT OVERVIEW ══════════════════════════════════════════ -->
+  <h2 id="s1"><span class="section-number">1</span>Project Overview</h2>
+  <p>A full-stack <strong>PCM (Process Communication Model)</strong> organizational intelligence platform. HR managers and coaches upload Kahler Communications PCM assessments, visualize personality profiles, analyze team dynamics, and get AI-powered coaching recommendations.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Property</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Monorepo</strong></td><td><code>client/</code> (Vite + React) + <code>server/</code> (Node + Express)</td></tr>
+        <tr><td><strong>Primary Language</strong></td><td>TypeScript — strict mode, v6.0</td></tr>
+        <tr><td><strong>Database</strong></td><td>PostgreSQL via Prisma ORM</td></tr>
+        <tr><td><strong>Auth</strong></td><td>JWT (7-day tokens, role-based)</td></tr>
+        <tr><td><strong>AI</strong></td><td>Multi-provider: Claude, OpenAI, Gemini, Ollama</td></tr>
+        <tr><td><strong>i18n</strong></td><td>English + Russian</td></tr>
+        <tr><td><strong>Dev Command</strong></td><td><code>npm run dev</code> — starts both on ports 5173 + 3001</td></tr>
+        <tr><td><strong>Default Login</strong></td><td><code>admin@pcmcoach.com</code> / <code>admin123</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══ S2 TECHNOLOGY MAP ════════════════════════════════════════════ -->
+  <h2 id="s2"><span class="section-number">2</span>Technology Map</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Layer</th><th>Technology</th><th>Version</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge badge-layer">frontend</span></td><td>React</td><td><span class="badge badge-version">19.2.4</span></td><td>UI rendering</td></tr>
+        <tr><td><span class="badge badge-layer">frontend</span></td><td>Vite</td><td><span class="badge badge-version">8.0.4</span></td><td>Dev server + bundler</td></tr>
+        <tr><td><span class="badge badge-layer">frontend</span></td><td>TypeScript</td><td><span class="badge badge-version">~6.0.2</span></td><td>Type safety (client)</td></tr>
+        <tr><td><span class="badge badge-layer">frontend</span></td><td>Tailwind CSS</td><td><span class="badge badge-version">4.2.2</span></td><td>Utility-first styling</td></tr>
+        <tr><td><span class="badge badge-layer">frontend</span></td><td>shadcn/ui</td><td><span class="badge badge-version">4.3.0</span></td><td>Accessible UI primitives</td></tr>
+        <tr><td><span class="badge badge-layer">frontend</span></td><td>@base-ui/react</td><td><span class="badge badge-version">1.4.0</span></td><td>Headless UI primitives</td></tr>
+        <tr><td><span class="badge badge-layer">frontend</span></td><td>framer-motion</td><td><span class="badge badge-version">12.38.0</span></td><td>Animations</td></tr>
+        <tr><td><span class="badge badge-layer">frontend</span></td><td>lucide-react</td><td><span class="badge badge-version">1.8.0</span></td><td>Icons</td></tr>
+        <tr><td><span class="badge badge-layer">frontend</span></td><td>Zustand</td><td><span class="badge badge-version">5.0.12</span></td><td>Global client state</td></tr>
+        <tr><td><span class="badge badge-layer">frontend</span></td><td>react-router-dom</td><td><span class="badge badge-version">7.14.1</span></td><td>Client-side routing</td></tr>
+        <tr><td><span class="badge badge-layer">frontend</span></td><td>i18next + react-i18next</td><td><span class="badge badge-version">26.0.5</span></td><td>EN/RU language toggle</td></tr>
+        <tr><td><span class="badge badge-layer">frontend</span></td><td>Recharts</td><td><span class="badge badge-version">3.8.1</span></td><td>Bar, Radar, Line charts</td></tr>
+        <tr><td><span class="badge badge-layer">frontend</span></td><td>@xyflow/react</td><td><span class="badge badge-version">12.10.2</span></td><td>Org Map + Team Network</td></tr>
+        <tr><td><span class="badge badge-layer">frontend</span></td><td>dagre</td><td><span class="badge badge-version">0.8.5</span></td><td>Auto graph layout</td></tr>
+        <tr><td><span class="badge badge-layer">frontend</span></td><td>sonner</td><td><span class="badge badge-version">2.0.7</span></td><td>Toast notifications</td></tr>
+        <tr><td><span class="badge badge-layer">frontend</span></td><td>react-dropzone</td><td><span class="badge badge-version">15.0.0</span></td><td>PDF upload UI</td></tr>
+        <tr><td><span class="badge badge-layer">frontend</span></td><td>xlsx</td><td><span class="badge badge-version">0.18.5</span></td><td>Spreadsheet export</td></tr>
+        <tr><td><span class="badge badge-layer">backend</span></td><td>Express</td><td><span class="badge badge-version">5.2.1</span></td><td>HTTP API server</td></tr>
+        <tr><td><span class="badge badge-layer">backend</span></td><td>TypeScript</td><td><span class="badge badge-version">^6.0.3</span></td><td>Type safety (server)</td></tr>
+        <tr><td><span class="badge badge-layer">backend</span></td><td>tsx</td><td><span class="badge badge-version">4.21.0</span></td><td>TS dev runner</td></tr>
+        <tr><td><span class="badge badge-layer">database</span></td><td>PostgreSQL</td><td>—</td><td>Relational data store</td></tr>
+        <tr><td><span class="badge badge-layer">database</span></td><td>Prisma</td><td><span class="badge badge-version">7.7.0</span></td><td>ORM + migrations</td></tr>
+        <tr><td><span class="badge badge-layer">auth</span></td><td>jsonwebtoken</td><td><span class="badge badge-version">9.0.3</span></td><td>JWT sign/verify</td></tr>
+        <tr><td><span class="badge badge-layer">auth</span></td><td>bcryptjs</td><td><span class="badge badge-version">3.0.3</span></td><td>Password hashing</td></tr>
+        <tr><td><span class="badge badge-layer">upload</span></td><td>multer</td><td><span class="badge badge-version">2.1.1</span></td><td>PDF multipart handling</td></tr>
+        <tr><td><span class="badge badge-layer">ai</span></td><td>@anthropic-ai/sdk</td><td><span class="badge badge-version">0.90.0</span></td><td>Claude API</td></tr>
+        <tr><td><span class="badge badge-layer">ai</span></td><td>openai</td><td><span class="badge badge-version">6.34.0</span></td><td>OpenAI + Ollama</td></tr>
+        <tr><td><span class="badge badge-layer">ai</span></td><td>@google/genai</td><td><span class="badge badge-version">1.50.1</span></td><td>Google Gemini</td></tr>
+        <tr><td><span class="badge badge-layer">dev</span></td><td>concurrently</td><td><span class="badge badge-version">9.2.1</span></td><td>Parallel dev scripts</td></tr>
+        <tr><td><span class="badge badge-layer">dev</span></td><td>ESLint + typescript-eslint</td><td><span class="badge badge-version">9.x/8.x</span></td><td>Linting</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══ S3 FRONTEND STACK ════════════════════════════════════════════ -->
+  <h2 id="s3"><span class="section-number">3</span>Frontend Stack</h2>
+
+  <h3 id="s3-1">3.1 React + Vite</h3>
+  <p>Entry point: <code>client/src/main.tsx</code></p>
+<pre><code><span class="kw">import</span> { createRoot } <span class="kw">from</span> <span class="st">'react-dom/client'</span>
+<span class="kw">import</span> <span class="st">'./index.css'</span>
+<span class="kw">import</span> App <span class="kw">from</span> <span class="st">'./App.tsx'</span>
+
+createRoot(document.getElementById(<span class="st">'root'</span>)!).render(&lt;App /&gt;)</code></pre>
+
+  <p>Vite config — <code>client/vite.config.ts</code>:</p>
+<pre><code><span class="kw">export default</span> defineConfig({
+  plugins: [react(), tailwindcss()],
+  resolve: { alias: { <span class="st">'@'</span>: path.resolve(__dirname, <span class="st">'./src'</span>) } },
+  server: { proxy: { <span class="st">'/api'</span>: <span class="st">'http://localhost:3001'</span> } },
+})</code></pre>
+
+  <div class="callout">
+    <strong>Key points</strong>
+    Path alias <code>@/</code> → <code>./src/</code> — use everywhere instead of relative imports.<br/>
+    API calls are proxied to port 3001 in dev — no CORS config needed locally.
+  </div>
+
+  <h3 id="s3-2">3.2 TypeScript (Client)</h3>
+  <p>Strict mode with notable options in <code>tsconfig.app.json</code>:</p>
+<pre><code>{
+  <span class="st">"target"</span>: <span class="st">"es2023"</span>,
+  <span class="st">"module"</span>: <span class="st">"esnext"</span>,
+  <span class="st">"moduleResolution"</span>: <span class="st">"bundler"</span>,
+  <span class="st">"jsx"</span>: <span class="st">"react-jsx"</span>,
+  <span class="st">"noUnusedLocals"</span>: <span class="kw">true</span>,
+  <span class="st">"noUnusedParameters"</span>: <span class="kw">true</span>,
+  <span class="st">"erasableSyntaxOnly"</span>: <span class="kw">true</span>,
+  <span class="st">"ignoreDeprecations"</span>: <span class="st">"6.0"</span>
+}</code></pre>
+  <ul>
+    <li><code>noUnusedLocals/Parameters</code> — clean up all unused variables or TS errors</li>
+    <li><code>erasableSyntaxOnly</code> — only TypeScript syntax that erases cleanly is allowed</li>
+    <li><code>ignoreDeprecations: "6.0"</code> — suppresses TS6 deprecation noise (also in server tsconfig)</li>
+  </ul>
+
+  <h3 id="s3-3">3.3 Tailwind CSS v4</h3>
+  <p>Config-free — uses CSS <code>@theme</code> directives in <code>client/src/index.css</code>. No <code>tailwind.config.ts</code> file.</p>
+  <div class="callout warn">
+    <strong>⚠ SVG Gotcha</strong>
+    <code>hsl(var(--primary))</code> does NOT resolve inside SVG attributes. Use hardcoded hex values for Recharts <code>stroke</code>/<code>fill</code>:<br/><code>stroke="#6366f1"</code> not <code>stroke="hsl(var(--primary))"</code>
+  </div>
+
+  <h3 id="s3-4">3.4 shadcn/ui</h3>
+  <p>Style: <code>base-nova</code> | Base color: <code>neutral</code> | Icons: <code>lucide</code></p>
+  <p>All components live in <code>client/src/components/ui/</code>:</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>File</th><th>Exports</th></tr></thead>
+      <tbody>
+        <tr><td><code>badge.tsx</code></td><td>Badge</td></tr>
+        <tr><td><code>button.tsx</code></td><td>Button</td></tr>
+        <tr><td><code>card.tsx</code></td><td>Card, CardHeader, CardContent, CardFooter</td></tr>
+        <tr><td><code>dialog.tsx</code></td><td>Dialog, DialogContent, DialogHeader</td></tr>
+        <tr><td><code>input.tsx</code></td><td>Input</td></tr>
+        <tr><td><code>label.tsx</code></td><td>Label</td></tr>
+        <tr><td><code>progress.tsx</code></td><td>Progress</td></tr>
+        <tr><td><code>select.tsx</code></td><td>Select, SelectContent, SelectItem</td></tr>
+        <tr><td><code>separator.tsx</code></td><td>Separator</td></tr>
+        <tr><td><code>sheet.tsx</code></td><td>Sheet, SheetContent, SheetHeader</td></tr>
+        <tr><td><code>skeleton.tsx</code></td><td>Skeleton</td></tr>
+        <tr><td><code>tabs.tsx</code></td><td>Tabs, TabsList, TabsTrigger, TabsContent</td></tr>
+        <tr><td><code>textarea.tsx</code></td><td>Textarea</td></tr>
+        <tr><td><code>tooltip.tsx</code></td><td>Tooltip, TooltipProvider, TooltipContent</td></tr>
+        <tr><td><code>ConfirmDialog.tsx</code></td><td>Custom delete confirmation modal</td></tr>
+        <tr><td><code>ExportActions.tsx</code></td><td>Copy + download for AI results</td></tr>
+        <tr><td><code>SaveButton.tsx</code></td><td>Saves AI output to SavedOutput table</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="s3-5">3.5 Routing</h3>
+  <p>react-router-dom v7 — BrowserRouter + <code>&lt;Routes&gt;</code>. All pages behind <code>AuthGuard</code> (checks <code>localStorage pcm_token</code>).</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Group</th><th>Routes</th></tr></thead>
+      <tbody>
+        <tr><td>Core</td><td><code>/</code> <code>/profiles</code> <code>/profiles/:id</code> <code>/upload</code> <code>/compare</code> <code>/org-map</code> <code>/network</code> <code>/pcm-explorer</code> <code>/stress-alerts</code> <code>/alerts</code></td></tr>
+        <tr><td>Groups/Teams</td><td><code>/groups</code> <code>/groups/:id</code> <code>/teams</code> <code>/teams/:id</code></td></tr>
+        <tr><td>Admin</td><td><code>/admin</code> <code>/admin/users</code></td></tr>
+        <tr><td>HR Tools</td><td><code>/hr-dashboard</code> <code>/hr-departments</code> <code>/hr-role-fit</code> <code>/hr-org-analysis</code> <code>/hr-hiring</code> <code>/hr-retention-risk</code> <code>/hr-team-composer</code></td></tr>
+        <tr><td>Coaching</td><td><code>/coaching/session-prep</code> <code>/coaching/conflict</code> <code>/coaching/communication</code> <code>/coaching/meeting</code> <code>/coaching/development-plan</code> <code>/coaching/journey</code> <code>/coaching/simulator</code> <code>/coaching/notes</code> <code>/coaching/goals</code> <code>/coaching/timeline</code> <code>/coaching/analytics</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="s3-6">3.6 Charts &amp; Graphs</h3>
+  <p><strong>Recharts 3</strong> — bar, radar, line charts. Remember: hardcoded hex colors in SVG attributes.</p>
+  <p><strong>@xyflow/react 12 + dagre</strong> — for Org Map and Team Network visualizations.</p>
+  <div class="callout warn">
+    <strong>⚠ React Flow v12 NodeProps</strong>
+    <code>data</code> is typed as <code>Record&lt;string, unknown&gt;</code>. Always cast explicitly:
+    <code>String(data.label)</code>, <code>Number(data.value)</code> — never direct cast or type assertion.
+  </div>
+  <p><strong>framer-motion 12</strong> — do not use <code>variants</code> stagger containers. Use direct <code>initial/animate</code> with <code>transition={{ delay }}</code>:</p>
+<pre><code><span class="cm">// ✓ Correct v12 animation pattern</span>
+&lt;motion.div
+  initial={{ opacity: <span class="nu">0</span>, y: <span class="nu">20</span> }}
+  animate={{ opacity: <span class="nu">1</span>, y: <span class="nu">0</span> }}
+  transition={{ delay: index * <span class="nu">0.05</span> }}
+/&gt;</code></pre>
+
+  <!-- ══ S4 BACKEND ═══════════════════════════════════════════════════ -->
+  <h2 id="s4"><span class="section-number">4</span>Backend Stack</h2>
+
+  <h3>4.1 Express v5</h3>
+  <p>Key difference from v4: async errors propagate automatically — no need for <code>next(err)</code> wrappers in async handlers. <code>path-to-regexp</code> v8 syntax for route patterns.</p>
+
+  <h3>4.2 TypeScript (Server)</h3>
+<pre><code>{
+  <span class="st">"target"</span>: <span class="st">"ES2022"</span>,
+  <span class="st">"module"</span>: <span class="st">"CommonJS"</span>,
+  <span class="st">"moduleResolution"</span>: <span class="st">"node"</span>,
+  <span class="st">"strict"</span>: <span class="kw">true</span>,
+  <span class="st">"esModuleInterop"</span>: <span class="kw">true</span>,
+  <span class="st">"ignoreDeprecations"</span>: <span class="st">"6.0"</span>
+}</code></pre>
+  <p>CommonJS modules — not ESM. <code>tsx</code> used for dev watch mode.</p>
+
+  <h3>4.3 Multer — PDF Upload</h3>
+<pre><code><span class="kw">const</span> upload = multer({ storage: multer.memoryStorage() })
+router.post(<span class="st">'/parse-pdf'</span>, requireAuth, upload.single(<span class="st">'file'</span>), handler)
+<span class="cm">// Access buffer via req.file.buffer</span></code></pre>
+
+  <h3>4.4 Route Files</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>File</th><th>Prefix</th><th>Auth Guard</th></tr></thead>
+      <tbody>
+        <tr><td><code>auth.ts</code></td><td>/api/auth</td><td>Public (login), requireAuth (me, password)</td></tr>
+        <tr><td><code>profiles.ts</code></td><td>/api/profiles</td><td>requireAuth; writes need <code>profiles_write</code> or <code>admin</code></td></tr>
+        <tr><td><code>teams.ts</code></td><td>/api/teams</td><td>requireAuth</td></tr>
+        <tr><td><code>groups.ts</code></td><td>/api/groups</td><td>requireAuth</td></tr>
+        <tr><td><code>users.ts</code></td><td>/api/users</td><td>requireRole('admin')</td></tr>
+        <tr><td><code>aiConfig.ts</code></td><td>/api/ai-config</td><td>requireAuth</td></tr>
+        <tr><td><code>coachingNotes.ts</code></td><td>/api/coaching-notes</td><td>requireAuth</td></tr>
+        <tr><td><code>goals.ts</code></td><td>/api/goals</td><td>requireAuth</td></tr>
+        <tr><td><code>savedOutputs.ts</code></td><td>/api/saved-outputs</td><td>requireAuth</td></tr>
+        <tr><td><code>organizations.ts</code></td><td>/api/organizations</td><td>requireAuth</td></tr>
+        <tr><td><code>auditLog.ts</code></td><td>/api/audit-log</td><td>requireRole('admin')</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>AI endpoints are registered inline in <code>server/src/index.ts</code>.</p>
+
+  <!-- ══ S5 DATABASE ══════════════════════════════════════════════════ -->
+  <h2 id="s5"><span class="section-number">5</span>Database &amp; ORM</h2>
+
+  <h3>5.1 Schema Summary</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Model</th><th>Key Fields</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Organization</strong></td><td>id, name, slug, plan, appTitle</td><td>Multi-tenancy root</td></tr>
+        <tr><td><strong>User</strong></td><td>id, email, password, name, roles[], status, tokenVersion</td><td>roles is <code>String[]</code></td></tr>
+        <tr><td><strong>Profile</strong></td><td>id, name, role, department, base, phase, + 9 JSON fields</td><td>Core PCM data</td></tr>
+        <tr><td><strong>Team</strong></td><td>id, name, groupId, orgId</td><td>Belongs to Group</td></tr>
+        <tr><td><strong>Group</strong></td><td>id, name, orgId</td><td>Contains Teams</td></tr>
+        <tr><td><strong>TeamMember</strong></td><td>profileId, teamId</td><td>Composite PK pivot</td></tr>
+        <tr><td><strong>CoachingNote</strong></td><td>id, profileId, authorId, content, isShared</td><td></td></tr>
+        <tr><td><strong>Goal</strong></td><td>id, profileId, authorId, title, status, dueDate, completedAt</td><td></td></tr>
+        <tr><td><strong>SavedOutput</strong></td><td>id, profileId, authorId, type, title, content(JSON)</td><td></td></tr>
+        <tr><td><strong>AIConfig</strong></td><td>id="default", config(JSON)</td><td>Singleton row</td></tr>
+        <tr><td><strong>AuditLog</strong></td><td>orgId, userId, userName, action, entity, entityId</td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>5.2 Profile JSON Fields</h3>
+  <p>These PCM dimensions are stored as <code>Json</code> in Prisma — type-cast on read:</p>
+<pre><code>floors · phaseStress · baseStress · perceptionFilters
+interactionStyles · personalityParts · communicationChannels
+preferredEnvironment · psychologicalNeeds</code></pre>
+
+  <h3>5.3 Prisma Singleton</h3>
+<pre><code><span class="cm">// server/src/lib/prisma.ts — never instantiate PrismaClient directly</span>
+<span class="kw">import</span> { PrismaClient } <span class="kw">from</span> <span class="st">'@prisma/client'</span>
+<span class="kw">const</span> prisma = <span class="kw">new</span> PrismaClient()
+<span class="kw">export default</span> prisma</code></pre>
+
+  <h3>5.4 Database Scripts</h3>
+<pre><code><span class="cm"># Push schema to DB (no migration file generated)</span>
+<span class="kw">cd</span> server && npm run db:push
+
+<span class="cm"># Seed initial admin user</span>
+npm run seed</code></pre>
+
+  <!-- ══ S6 AI INTEGRATION ════════════════════════════════════════════ -->
+  <h2 id="s6"><span class="section-number">6</span>AI Integration Layer</h2>
+
+  <h3>6.1 Multi-Provider Dispatch</h3>
+  <p>File: <code>server/src/services/aiRecommendations.ts</code> (1157 lines)</p>
+<pre><code><span class="cm">// Routes to the configured AI provider</span>
+<span class="kw">async function</span> dispatch(prompt: <span class="ty">string</span>, config?: <span class="ty">AIConfigData</span>): <span class="ty">Promise&lt;string&gt;</span>
+
+<span class="cm">// Generic dispatch that returns parsed JSON</span>
+<span class="kw">async function</span> dispatchRaw&lt;<span class="ty">T</span>&gt;(prompt: <span class="ty">string</span>, config?: <span class="ty">AIConfigData</span>): <span class="ty">Promise&lt;T&gt;</span></code></pre>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Provider</th><th>SDK</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><code>claude</code></td><td>@anthropic-ai/sdk</td><td>Default; uses ANTHROPIC_API_KEY</td></tr>
+        <tr><td><code>openai</code></td><td>openai</td><td>Uses OPENAI_API_KEY</td></tr>
+        <tr><td><code>gemini</code></td><td>@google/genai</td><td>Uses GEMINI_API_KEY</td></tr>
+        <tr><td><code>ollama</code></td><td>openai (custom baseURL)</td><td>Local models via Ollama REST API</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <strong>JSON Fence Stripping</strong>
+    All AI responses strip markdown code fences before JSON.parse:<br/>
+    <code>raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim()</code>
+  </div>
+
+  <h3>6.2 All 19 AI Service Functions</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Function</th><th>Key Inputs</th><th>Output</th></tr></thead>
+      <tbody>
+        <tr><td><code>generateRecommendations</code></td><td>profile, lang, config?</td><td>Strengths, risks, actions, tips</td></tr>
+        <tr><td><code>generateTeamRecommendations</code></td><td>profiles[], teamName, lang</td><td>Team coaching guide</td></tr>
+        <tr><td><code>generateTeamAnalysis</code></td><td>profiles[], teamName, lang</td><td>Dynamics, blind spots, stress patterns</td></tr>
+        <tr><td><code>generateHiringRecommendation</code></td><td>profiles[], position?, lang</td><td>Fit types, interview focus</td></tr>
+        <tr><td><code>generateDevelopmentPlan</code></td><td>profile, lang, notes?</td><td>Individual dev plan</td></tr>
+        <tr><td><code>enhanceDevelopmentPlan</code></td><td>profile, existingPlan, lang</td><td>Enhanced plan</td></tr>
+        <tr><td><code>generateTeamComposition</code></td><td>profiles[], purpose, lang</td><td>Composition evaluation</td></tr>
+        <tr><td><code>generateTeamSuggestion</code></td><td>profiles[], teamSize, purpose</td><td>Team suggestion</td></tr>
+        <tr><td><code>generateMeetingPrep</code></td><td>manager, report, lang</td><td>1-on-1 prep guide</td></tr>
+        <tr><td><code>generateSessionPrep</code></td><td>profile, lang, notes?</td><td>Session preparation</td></tr>
+        <tr><td><code>generateConflictResolution</code></td><td>profileA, profileB, lang</td><td>Mediation guide</td></tr>
+        <tr><td><code>generateMeetingFacilitation</code></td><td>profiles[], teamName, lang</td><td>Facilitation guide</td></tr>
+        <tr><td><code>generateCoachingJourney</code></td><td>profile, lang</td><td>Long-term coaching plan</td></tr>
+        <tr><td><code>generateSimulatorReply</code></td><td>profile, scenario, userRole, messages[]</td><td>Chat response</td></tr>
+        <tr><td><code>generateCoachHints</code></td><td>profile, scenario</td><td>Opening hints</td></tr>
+        <tr><td><code>generateTurnHints</code></td><td>profile, scenario, messages[]</td><td>Per-turn hints</td></tr>
+        <tr><td><code>generateSimulatorDebrief</code></td><td>profile, scenario, userRole, messages[]</td><td>Post-session debrief</td></tr>
+        <tr><td><code>generatePCMChatReply</code></td><td>messages[], currentType?</td><td>PCM chatbot reply</td></tr>
+        <tr><td><code>testConnection</code></td><td>aiConfig</td><td>Connection verification</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>6.3 AIConfig Singleton</h3>
+<pre><code><span class="kw">interface</span> <span class="ty">AIConfigData</span> {
+  provider: <span class="st">'claude'</span> | <span class="st">'openai'</span> | <span class="st">'gemini'</span> | <span class="st">'ollama'</span>
+  model:    <span class="ty">string</span>
+  apiKey?:  <span class="ty">string</span>
+  baseUrl?: <span class="ty">string</span>  <span class="cm">// Ollama only</span>
+}</code></pre>
+  <p>Single row in DB (<code>id = "default"</code>). Loaded per-request. Can be overridden by <code>aiConfig</code> in request body.</p>
+
+  <h3>6.4 PDF Parser</h3>
+  <p>File: <code>server/src/services/pdfParser.ts</code></p>
+  <p>Uses Claude Vision (<code>claude-sonnet-4-6</code>) — PDF base64-encoded. Handles Russian PCM type names:</p>
+<pre><code>Логик → thinker  |  Упорный → persister  |  Душевный → harmonizer
+Мечтатель → imaginer  |  Бунтарь → rebel  |  Деятель → promoter</code></pre>
+
+  <!-- ══ S7 AUTH ═══════════════════════════════════════════════════════ -->
+  <h2 id="s7"><span class="section-number">7</span>Auth &amp; Security</h2>
+
+  <h3>7.1 JWT Payload</h3>
+<pre><code><span class="kw">interface</span> <span class="ty">JWTPayload</span> {
+  userId:       <span class="ty">string</span>
+  email:        <span class="ty">string</span>
+  roles:        <span class="ty">string[]</span>
+  orgId:        <span class="ty">string</span> | <span class="kw">null</span>
+  tokenVersion: <span class="ty">number</span>  <span class="cm">// increment to invalidate all sessions</span>
+}
+<span class="cm">// 7-day expiry, HS256, stored in localStorage as 'pcm_token'</span></code></pre>
+
+  <h3>7.2 Middleware</h3>
+<pre><code>requireAuth               <span class="cm">// validates Bearer token, attaches user to req</span>
+requireRole(...roles)     <span class="cm">// 403 if user lacks ANY of the specified roles</span>
+
+<span class="cm">// Passes if user has ANY listed role:</span>
+requireRole(<span class="st">'profiles_write'</span>, <span class="st">'admin'</span>)</code></pre>
+
+  <h3>7.3 Role Matrix</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Role</th><th>Access Level</th></tr></thead>
+      <tbody>
+        <tr><td><code>admin</code></td><td>Full access to everything</td></tr>
+        <tr><td><code>hr</code></td><td>HR analytics, profiles (read-only), teams/groups</td></tr>
+        <tr><td><code>coach</code></td><td>Coaching tools, notes, goals, profiles (read-only)</td></tr>
+        <tr><td><code>profiles_write</code></td><td>Permission modifier — enables create/edit/delete profiles for hr/coach</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>7.4 Auth Cache</h3>
+  <p>In-memory 60s TTL in <code>server/src/lib/auth.ts</code> — avoids DB round-trip on every request. <code>invalidateAuthCache(userId)</code> called on deactivation or role change for immediate effect. <code>lastSeenAt</code> updated with 5-minute throttle.</p>
+
+  <!-- ══ S8 STATE MANAGEMENT ══════════════════════════════════════════ -->
+  <h2 id="s8"><span class="section-number">8</span>State Management</h2>
+
+  <h3>8.1 Zustand App Store — <code>client/src/store/useStore.ts</code></h3>
+<pre><code><span class="kw">interface</span> <span class="ty">AppState</span> {
+  profiles:       <span class="ty">PCMProfile[]</span>
+  teams:          <span class="ty">Team[]</span>
+  groups:         <span class="ty">Group[]</span>
+  aiConfig:       <span class="ty">AIConfig</span>
+  stressThreshold: <span class="ty">number</span>   <span class="cm">// default 75, persisted to localStorage</span>
+  loading:        <span class="ty">boolean</span>
+  initialized:    <span class="ty">boolean</span>
+
+  init():                     <span class="ty">Promise&lt;void&gt;</span>  <span class="cm">// call once on app mount</span>
+  addProfile(data):           <span class="ty">Promise&lt;void&gt;</span>
+  updateProfile(id, data):    <span class="ty">Promise&lt;void&gt;</span>
+  deleteProfile(id):          <span class="ty">Promise&lt;void&gt;</span>
+  addTeam / updateTeam / deleteTeam(...)
+  addGroup / updateGroup / deleteGroup(...)
+  updateAIConfig(config):     <span class="ty">Promise&lt;void&gt;</span>
+  setStressThreshold(value):  <span class="ty">void</span>
+}</code></pre>
+
+  <h3>8.2 Auth Store — <code>client/src/store/useAuth.ts</code></h3>
+<pre><code><span class="kw">interface</span> <span class="ty">AuthState</span> {
+  user:       <span class="ty">User</span> | <span class="kw">null</span>
+  hasRole(role: <span class="ty">string</span>): <span class="ty">boolean</span>
+  login(token: <span class="ty">string</span>, user: <span class="ty">User</span>): <span class="ty">void</span>
+  logout():   <span class="ty">void</span>
+}</code></pre>
+
+  <!-- ══ S9 API LAYER ═════════════════════════════════════════════════ -->
+  <h2 id="s9"><span class="section-number">9</span>API Layer</h2>
+
+  <h3>9.1 Base Helpers — <code>client/src/lib/api.ts</code></h3>
+<pre><code><span class="cm">// Auto-includes Authorization: Bearer &lt;token&gt; header</span>
+<span class="cm">// Auto-logs out (clears pcm_token) on 401</span>
+get&lt;<span class="ty">T</span>&gt;(path: <span class="ty">string</span>): <span class="ty">Promise&lt;T&gt;</span>
+post&lt;<span class="ty">T</span>&gt;(path: <span class="ty">string</span>, body: <span class="ty">unknown</span>): <span class="ty">Promise&lt;T&gt;</span>
+put&lt;<span class="ty">T</span>&gt;(path: <span class="ty">string</span>, body: <span class="ty">unknown</span>): <span class="ty">Promise&lt;T&gt;</span>
+del&lt;<span class="ty">T</span>&gt;(path: <span class="ty">string</span>): <span class="ty">Promise&lt;T&gt;</span></code></pre>
+
+  <h3>9.2 API Modules</h3>
+<pre><code>authApi.login(email, password)  |  authApi.me()  |  authApi.changePassword(...)
+profilesApi.list() / get(id) / create(data) / update(id,data) / delete(id)
+teamsApi   — same CRUD pattern
+groupsApi  — same CRUD pattern
+aiConfigApi.get() / save(data)
+coachingNotesApi.list(profileId) / create / update / delete
+usersApi.list() / create / update / delete  <span class="cm">// admin only</span>
+orgsApi.current() / update(name, appTitle?)</code></pre>
+
+  <!-- ══ S10 CONVENTIONS ══════════════════════════════════════════════ -->
+  <h2 id="s10"><span class="section-number">10</span>Coding Conventions</h2>
+
+  <h3>10.1 Naming</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Entity</th><th>Pattern</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td>React components</td><td>PascalCase named export</td><td><code>export function SessionPrep()</code></td></tr>
+        <tr><td>Hooks</td><td>camelCase with <code>use</code> prefix</td><td><code>useStore</code>, <code>useAuth</code></td></tr>
+        <tr><td>API helpers</td><td>camelCase module + method</td><td><code>profilesApi.create(...)</code></td></tr>
+        <tr><td>Types/Interfaces</td><td>PascalCase</td><td><code>PCMProfile</code>, <code>AIConfig</code></td></tr>
+        <tr><td>PCM type values</td><td>lowercase strings</td><td><code>'thinker'</code>, <code>'rebel'</code></td></tr>
+        <tr><td>Component files</td><td>PascalCase</td><td><code>StressSequenceCard.tsx</code></td></tr>
+        <tr><td>Lib/util files</td><td>camelCase</td><td><code>api.ts</code>, <code>utils.ts</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>10.2 Component Template</h3>
+<pre><code><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="st">'react'</span>
+<span class="kw">import</span> { useStore } <span class="kw">from</span> <span class="st">'@/store/useStore'</span>
+<span class="kw">import</span> { Button } <span class="kw">from</span> <span class="st">'@/components/ui/button'</span>
+
+<span class="kw">interface</span> <span class="ty">Props</span> {
+  profileId: <span class="ty">string</span>
+}
+
+<span class="kw">export function</span> MyFeature({ profileId }: <span class="ty">Props</span>) {
+  <span class="kw">const</span> { profiles } = useStore()
+  <span class="kw">const</span> [loading, setLoading] = useState(<span class="kw">false</span>)
+
+  <span class="kw">async function</span> handleAction() {
+    setLoading(<span class="kw">true</span>)
+    <span class="kw">try</span> {
+      <span class="kw">await</span> profilesApi.update(profileId, data)
+    } <span class="kw">finally</span> {
+      setLoading(<span class="kw">false</span>)
+    }
+  }
+
+  <span class="kw">return</span> &lt;div&gt;...&lt;/div&gt;
+}</code></pre>
+
+  <h3>10.3 Server AI Endpoint Template</h3>
+<pre><code>app.post(<span class="st">'/api/my-feature'</span>, requireAuth, <span class="kw">async</span> (req, res) =&gt; {
+  <span class="kw">const</span> { profileId, lang = <span class="st">'en'</span>, aiConfig } = req.body
+  <span class="kw">const</span> profile = <span class="kw">await</span> prisma.profile.findUnique({ where: { id: profileId } })
+  <span class="kw">if</span> (!profile) <span class="kw">return</span> res.status(<span class="nu">404</span>).json({ error: <span class="st">'Not found'</span> })
+  <span class="kw">const</span> result = <span class="kw">await</span> generateMyFeature(profile <span class="kw">as</span> <span class="ty">PCMProfile</span>, lang, aiConfig)
+  <span class="kw">await</span> createAuditLog({ ...req.user, action: <span class="st">'AI_GENERATE'</span>, entity: <span class="st">'MyFeature'</span>, entityId: profileId })
+  res.json(result)
+})</code></pre>
+
+  <!-- ══ S11 PATTERNS ═════════════════════════════════════════════════ -->
+  <h2 id="s11"><span class="section-number">11</span>Implementation Patterns</h2>
+
+  <h3>11.1 Reusable Components</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Component</th><th>Path</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><code>PCMTypeBadge</code></td><td>components/profile/PCMTypeBadge</td><td>Colored pill for a PCM type</td></tr>
+        <tr><td><code>CondominiumTower</code></td><td>components/profile/CondominiumTower</td><td>Visual PCM floor tower</td></tr>
+        <tr><td><code>StressSequenceCard</code></td><td>components/profile/StressSequenceCard</td><td>Degree 1/2/3 stress sequences</td></tr>
+        <tr><td><code>PercentageBar</code></td><td>components/profile/PercentageBar</td><td>Horizontal percentage bar</td></tr>
+        <tr><td><code>AIPanel</code></td><td>components/ai/AIPanel</td><td>Reusable AI generation panel</td></tr>
+        <tr><td><code>ExportActions</code></td><td>components/ui/ExportActions</td><td>Copy + download for AI results</td></tr>
+        <tr><td><code>SaveButton</code></td><td>components/ui/SaveButton</td><td>Save to SavedOutput table</td></tr>
+        <tr><td><code>ConfirmDialog</code></td><td>components/ui/ConfirmDialog</td><td>Delete confirmation modal</td></tr>
+        <tr><td><code>Breadcrumb</code></td><td>components/Breadcrumb</td><td>Page breadcrumb navigation</td></tr>
+        <tr><td><code>GlobalSearch</code></td><td>components/GlobalSearch</td><td>Global profile/team search</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>11.2 PCM Domain Constants</h3>
+  <p>File: <code>client/src/types/pcm.ts</code></p>
+<pre><code><span class="kw">export const</span> PCM_TYPES = [<span class="st">'thinker'</span>,<span class="st">'persister'</span>,<span class="st">'harmonizer'</span>,<span class="st">'imaginer'</span>,<span class="st">'rebel'</span>,<span class="st">'promoter'</span>] <span class="kw">as const</span>
+<span class="kw">export type</span> <span class="ty">PCMType</span> = <span class="kw">typeof</span> PCM_TYPES[<span class="ty">number</span>]
+
+<span class="kw">export const</span> PCM_TYPE_COLORS: Record&lt;<span class="ty">PCMType</span>, <span class="ty">string</span>&gt; = {
+  thinker:    <span class="st">'#4A90D9'</span>,
+  persister:  <span class="st">'#7B5EA7'</span>,
+  harmonizer: <span class="st">'#E8A44B'</span>,
+  imaginer:   <span class="st">'#A8C4A2'</span>,
+  rebel:      <span class="st">'#F5C842'</span>,
+  promoter:   <span class="st">'#D94A4A'</span>,
+}
+
+<span class="kw">export const</span> STRESS_RISK_THRESHOLD = <span class="nu">75</span>  <span class="cm">// overridable per org</span></code></pre>
+
+  <h3>11.3 Audit Logging</h3>
+<pre><code><span class="kw">await</span> createAuditLog({
+  orgId:      req.user.orgId,
+  userId:     req.user.userId,
+  userName:   req.user.name,
+  action:     <span class="st">'CREATE'</span>,   <span class="cm">// CREATE | UPDATE | DELETE | AI_GENERATE</span>
+  entity:     <span class="st">'Profile'</span>,
+  entityId:   profile.id,
+  entityName: profile.name,
+})</code></pre>
+
+  <!-- ══ S12 DIRECTORY ════════════════════════════════════════════════ -->
+  <h2 id="s12"><span class="section-number">12</span>Directory Structure</h2>
+<div class="diagram">pcm-organizational-coach/
+├── package.json              Root: concurrently dev script
+├── CLAUDE.md                 Project context for Claude
+├── docs/
+│   ├── Technology_Stack_Blueprint.md
+│   └── Technology_Stack_Blueprint.html  ← this file
+│
+├── client/
+│   ├── index.html            App shell + theme init script
+│   ├── vite.config.ts        Vite + Tailwind plugin + API proxy
+│   ├── tsconfig.json
+│   ├── tsconfig.app.json     Strict TS settings
+│   ├── components.json       shadcn/ui config (base-nova)
+│   ├── eslint.config.js      ESLint flat config
+│   └── src/
+│       ├── main.tsx          React entry point
+│       ├── App.tsx           Router + AuthGuard + 38 routes
+│       ├── index.css         Tailwind @theme + CSS vars
+│       ├── components/
+│       │   ├── ai/           AIPanel + AI-related components
+│       │   ├── layout/       Sidebar, Header, AppLayout
+│       │   ├── profile/      PCMTypeBadge, CondominiumTower, etc.
+│       │   ├── team/         Team-specific components
+│       │   └── ui/           shadcn/ui (17 files) + custom
+│       ├── i18n/
+│       │   ├── index.ts      i18next init
+│       │   ├── en.json       English translations
+│       │   └── ru.json       Russian translations
+│       ├── lib/
+│       │   ├── api.ts        All API helpers
+│       │   └── utils.ts      cn() + utilities
+│       ├── pages/
+│       │   ├── admin/        Admin.tsx, UserManagement.tsx
+│       │   ├── coaching/     11 coaching feature pages
+│       │   ├── hr/           7 HR analytics pages
+│       │   └── [root]        Dashboard, Profiles, Teams, etc.
+│       ├── store/
+│       │   ├── useStore.ts   Global app state (Zustand)
+│       │   └── useAuth.ts    Auth state (Zustand)
+│       └── types/
+│           └── pcm.ts        PCMType, PCMProfile, constants, colors
+│
+└── server/
+    ├── package.json
+    ├── tsconfig.json         CommonJS, ES2022, strict
+    ├── prisma/
+    │   └── schema.prisma     11 models, PostgreSQL
+    └── src/
+        ├── index.ts          Express app + all route mounts + AI endpoints
+        ├── seed.ts           DB seed (admin user)
+        ├── lib/
+        │   ├── auth.ts       JWT, requireAuth, requireRole, 60s cache
+        │   ├── audit.ts      createAuditLog helper
+        │   └── prisma.ts     Prisma singleton
+        ├── routes/           11 CRUD route files
+        ├── services/
+        │   ├── aiRecommendations.ts  19 AI features + dispatch (1157 lines)
+        │   └── pdfParser.ts         Claude Vision PDF extraction
+        └── types/
+            └── pcm.ts        Shared PCM TypeScript types</div>
+
+  <!-- ══ S13 TOOLING ══════════════════════════════════════════════════ -->
+  <h2 id="s13"><span class="section-number">13</span>Build &amp; Tooling</h2>
+<pre><code><span class="cm"># Root</span>
+npm run dev         <span class="cm"># Starts client (5173) + server (3001) concurrently</span>
+
+<span class="cm"># Client</span>
+npm run dev         <span class="cm"># Vite dev server with HMR</span>
+npm run build       <span class="cm"># tsc --noEmit + vite build</span>
+npm run lint        <span class="cm"># ESLint flat config</span>
+npm run preview     <span class="cm"># Preview production build</span>
+
+<span class="cm"># Server</span>
+npm run dev         <span class="cm"># tsx watch src/index.ts</span>
+npm run build       <span class="cm"># tsc → dist/</span>
+npm run start       <span class="cm"># node dist/index.js</span>
+npm run seed        <span class="cm"># Creates admin@pcmcoach.com / admin123</span>
+npm run db:push     <span class="cm"># Prisma schema sync (no migration file)</span></code></pre>
+
+  <!-- ══ S14 ENV ══════════════════════════════════════════════════════ -->
+  <h2 id="s14"><span class="section-number">14</span>Environment Configuration</h2>
+
+  <h3>14.1 Server <code>.env</code></h3>
+<pre><code>DATABASE_URL=postgresql://postgres:123@localhost:5432/pcm_org_intelligence
+JWT_SECRET=your-secret-here
+ANTHROPIC_API_KEY=your_api_key_here   <span class="cm"># optional if configured via Admin UI</span>
+PORT=3001</code></pre>
+
+  <h3>14.2 Client <code>localStorage</code> Keys</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Key</th><th>Purpose</th><th>Default</th></tr></thead>
+      <tbody>
+        <tr><td><code>pcm_token</code></td><td>JWT auth token</td><td>—</td></tr>
+        <tr><td><code>pcm_stress_threshold</code></td><td>Stress risk threshold</td><td>75</td></tr>
+        <tr><td><code>i18nextLng</code></td><td>Language preference</td><td>en</td></tr>
+        <tr><td><code>pcm-theme</code></td><td>UI theme</td><td>light</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>14.3 First-Time Setup</h3>
+<pre><code>npm install && cd client && npm install && cd ../server && npm install
+cd server && npm run db:push
+npm run seed
+cd .. && npm run dev
+<span class="cm"># Login: admin@pcmcoach.com / admin123</span></code></pre>
+
+  <!-- ══ S15 DIAGRAMS ═════════════════════════════════════════════════ -->
+  <h2 id="s15"><span class="section-number">15</span>Architecture Diagrams</h2>
+
+  <h3>15.1 Full Stack Overview</h3>
+<div class="diagram">┌─────────────────────────────────────────────────────────────────┐
+│                     BROWSER  (port 5173)                         │
+│                                                                   │
+│  React 19 + TypeScript 6                                         │
+│  ┌──────────────────┐  ┌──────────────────┐  ┌───────────────┐  │
+│  │  React Router 7  │  │  Zustand 5 Store │  │ react-i18next │  │
+│  │  38 page routes  │  │ profiles/teams/  │  │   EN + RU     │  │
+│  └──────────────────┘  │   groups/aiConfig│  └───────────────┘  │
+│  ┌──────────────────┐  └──────────────────┘  ┌───────────────┐  │
+│  │  Tailwind CSS 4  │  ┌──────────────────┐  │ framer-motion │  │
+│  │  CSS variables   │  │  shadcn/ui 4.3   │  │    v12        │  │
+│  └──────────────────┘  │  17 components   │  └───────────────┘  │
+│  ┌──────────────────┐  └──────────────────┘  ┌───────────────┐  │
+│  │  Recharts 3      │  ┌──────────────────┐  │ @xyflow/react │  │
+│  │  Bar/Radar/Line  │  │  lucide-react    │  │ + dagre layout│  │
+│  └──────────────────┘  └──────────────────┘  └───────────────┘  │
+└──────────────────────────────┬──────────────────────────────────┘
+                               │ fetch /api/* (proxied in dev)
+┌──────────────────────────────▼──────────────────────────────────┐
+│                   NODE.JS SERVER  (port 3001)                    │
+│                                                                   │
+│  Express 5 + TypeScript 6                                        │
+│  ┌────────────────┐  ┌─────────────────┐  ┌──────────────────┐  │
+│  │  requireAuth   │  │  requireRole    │  │ multer (memory)  │  │
+│  │  JWT + 60s TTL │  │  RBAC           │  │ PDF uploads      │  │
+│  └────────────────┘  └─────────────────┘  └──────────────────┘  │
+│  ┌────────────────┐  ┌─────────────────┐  ┌──────────────────┐  │
+│  │ 11 CRUD routes │  │ 19 AI endpoints │  │ AuditLog helper  │  │
+│  └────────────────┘  └─────────────────┘  └──────────────────┘  │
+│  ┌──────────────────────────────────────────────────────────┐    │
+│  │  AI Dispatch Layer  (aiRecommendations.ts, 1157 lines)    │    │
+│  │  ┌───────────┐  ┌───────────┐  ┌──────────┐  ┌───────┐  │    │
+│  │  │  Claude   │  │  OpenAI   │  │  Gemini  │  │Ollama │  │    │
+│  │  │ sdk 0.90  │  │ sdk 6.34  │  │genai 1.50│  │local  │  │    │
+│  │  └───────────┘  └───────────┘  └──────────┘  └───────┘  │    │
+│  └──────────────────────────────────────────────────────────┘    │
+└──────────────────────────────┬──────────────────────────────────┘
+                               │ Prisma ORM
+┌──────────────────────────────▼──────────────────────────────────┐
+│                     POSTGRESQL DATABASE                           │
+│                                                                   │
+│  Organization ──→ User                                           │
+│       ↓                                                          │
+│  Profile ←──── TeamMember ────→ Team ────→ Group                │
+│       ↓                                                          │
+│  CoachingNote  /  Goal  /  SavedOutput                           │
+│                                                                   │
+│  AIConfig (singleton)   AuditLog                                 │
+└──────────────────────────────────────────────────────────────────┘</div>
+
+  <h3>15.2 AI Feature Request — Data Flow</h3>
+<div class="diagram">Component          client/lib/api.ts         Express             aiRecommendations.ts
+    │                      │                      │                        │
+    │── POST /api/... ────▶│                      │                        │
+    │   { profileId,       │── fetch + JWT ──────▶│                        │
+    │     lang, aiConfig } │                      │── requireAuth          │
+    │                      │                      │── prisma.profile.find  │
+    │                      │                      │                        │
+    │                      │                      │── generateFeature() ──▶│
+    │                      │                      │                        │── dispatch(prompt)
+    │                      │                      │                        │    └─ Claude/OpenAI/Gemini/Ollama
+    │                      │                      │                        │◀─ raw JSON string
+    │                      │                      │   strip ``` fences     │
+    │                      │                      │   JSON.parse           │
+    │                      │                      │── createAuditLog()     │
+    │◀─ { result } ────────│◀─ JSON response ─────│                        │</div>
+
+  <!-- ══ S16 BLUEPRINT ════════════════════════════════════════════════ -->
+  <h2 id="s16"><span class="section-number">16</span>New Feature Implementation Blueprint</h2>
+
+  <h3>Checklist: Adding a New AI Feature</h3>
+  <ol>
+    <li><strong>Service function</strong> in <code>server/src/services/aiRecommendations.ts</code>:<br/>
+      <code>export async function generateMyFeature(profile, lang, config?): Promise&lt;MyResult&gt;</code>
+    </li>
+    <li><strong>AI endpoint</strong> in <code>server/src/index.ts</code> — follow the template in §10.3</li>
+    <li><strong>API helper</strong> in <code>client/src/lib/api.ts</code></li>
+    <li><strong>Page component</strong> in <code>client/src/pages/coaching/MyFeature.tsx</code> — follow §10.2 template</li>
+    <li><strong>Route</strong> added to <code>client/src/App.tsx</code></li>
+    <li><strong>i18n key</strong> added to <code>client/src/i18n/en.json</code></li>
+  </ol>
+
+  <h3>Checklist: Adding a New CRUD Resource</h3>
+  <ol>
+    <li><strong>Prisma model</strong> added to <code>schema.prisma</code> → <code>npm run db:push</code></li>
+    <li><strong>Route file</strong> created in <code>server/src/routes/myResource.ts</code></li>
+    <li><strong>Route mounted</strong> in <code>server/src/index.ts</code>: <code>app.use('/api/my-resource', router)</code></li>
+    <li><strong>API helpers</strong> added to <code>client/src/lib/api.ts</code></li>
+    <li><strong>Zustand state + actions</strong> added to <code>useStore.ts</code> if global</li>
+    <li><strong>Page components</strong> following existing list + detail patterns</li>
+  </ol>
+
+  <h3>Known Gaps (Planned Work)</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Feature</th><th>Status</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Profile editing</td><td>Missing</td><td>No edit flow on ProfileDetail — highest priority gap</td></tr>
+        <tr><td>Saved Outputs browser</td><td>Missing</td><td>Table + endpoint exist, no list page yet</td></tr>
+        <tr><td>Meeting Prep</td><td>Orphaned</td><td>Page + API exist — add route to App.tsx to re-enable</td></tr>
+        <tr><td>HR Team Analysis</td><td>Orphaned</td><td>Page + API exist — add route to App.tsx</td></tr>
+        <tr><td>PDF coaching reports</td><td>Missing</td><td>Export endpoint returns raw JSON only</td></tr>
+        <tr><td>Profile re-assessment flow</td><td>Missing</td><td>Staleness warnings exist, no guided re-upload</td></tr>
+        <tr><td>Multi-org UX</td><td>Partial</td><td>orgId filtering works, no org switcher/invite UX</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</main>
+</div>
+
+<!-- ══ FOOTER ════════════════════════════════════════════════════════════ -->
+<footer id="footer">
+  <span>PCM Organizational Coach</span>
+  <span>·</span>
+  <span>Technology Stack Blueprint v1.0</span>
+  <span>·</span>
+  <span>Generated 2026-04-25</span>
+  <span>·</span>
+  <a href="Technology_Stack_Blueprint.md">View Markdown source</a>
+</footer>
+
+<script>
+  // ── Theme toggle ─────────────────────────────────────────────────────
+  const html  = document.documentElement
+  const btn   = document.getElementById('themeToggle')
+  const stored = localStorage.getItem('docs-theme')
+  if (stored === 'dark') { html.setAttribute('data-theme','dark'); btn.textContent = '☾' }
+
+  btn.addEventListener('click', () => {
+    const isDark = html.getAttribute('data-theme') === 'dark'
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark')
+    btn.textContent = isDark ? '☀' : '☾'
+    localStorage.setItem('docs-theme', isDark ? 'light' : 'dark')
+  })
+
+  // ── Active nav link on scroll ────────────────────────────────────────
+  const sections = document.querySelectorAll('h2[id], h3[id]')
+  const navLinks  = document.querySelectorAll('.nav-link')
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.getAttribute('id')
+        navLinks.forEach(l => {
+          l.classList.toggle('active', l.getAttribute('href') === '#' + id)
+        })
+      }
+    })
+  }, { rootMargin: '-56px 0px -70% 0px' })
+
+  sections.forEach(s => observer.observe(s))
+</script>
+</body>
+</html>
